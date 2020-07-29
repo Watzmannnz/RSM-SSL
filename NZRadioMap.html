@@ -29,13 +29,17 @@
 	  
     </style>
 	<link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/themes/light/main.css">
-    <script src="https://js.arcgis.com/4.15/"></script>
+    <script src="https://js.arcgis.com/4.16/"></script>
     <script>
+	
+	//require and function elements must match with the sequence
     require([
       "esri/Map",
       "esri/views/MapView",
       "esri/widgets/BasemapToggle",
 	  "esri/layers/FeatureLayer",
+	  //"esri/renderers/SimpleRenderer",
+	  //"esri/smartMapping/renderers/location",
 	  "esri/widgets/Slider",
 	  "esri/widgets/Search",
 	  "esri/widgets/Expand",
@@ -51,17 +55,12 @@
         map: map,
         center: [174.8199431,-41.2662579],
         zoom: 8
-      });
-       
-	var legend = new Legend({
-       view: view,
-       container: "legendDiv"
-       });
+      });      
 		
-       var basemapToggle = new BasemapToggle({
-         view: view,
-         nextBasemap: "satellite",
-       });
+      var basemapToggle = new BasemapToggle({
+        view: view,
+        nextBasemap: "satellite",
+      });
       
        view.ui.add(basemapToggle,"bottom-right");
 	   
@@ -131,6 +130,7 @@
 		  },
 		  ]},
 		  ],
+		  //Create the RRF search action and icon on popup
 		  actions: [
 		  {
 		    id: "Search-on-RRF",
@@ -141,7 +141,8 @@
 		  outFields: ["*"]
        };		   
 
-           view.when(function () {
+	   //Create the RRF search function
+          view.when(function () {
           var popup = view.popup;
           popup.viewModel.on("trigger-action", function (event) {
             if (event.action.id === "Search-on-RRF") {
@@ -161,53 +162,91 @@
          //field: "name",
 		 valueExpression: 
 		 //format name to short version
-		 "When($feature.name == 'VODAFONE NEW ZEALAND LIMITED', 'Vodafone', $feature.name == 'TWO DEGREES NETWORKS LIMITED', '2 degrees', $feature.name == 'SPARK NEW ZEALAND TRADING LIMITED', 'Spark', 'Others')",
+		 "When($feature.name == 'VODAFONE NEW ZEALAND LIMITED', 'Vodafone', $feature.name == 'TWO DEGREES NETWORKS LIMITED', '2degrees', $feature.name == 'SPARK NEW ZEALAND TRADING LIMITED', 'Spark', 'Others')",
          defaultSymbol: { 
 		 type: "simple-marker", 
-		 size: 4,
+		 //size: 4,
 		 color: "#FFA500", //orange
-         outline: {width: 0.5, color: "white"}
+         outline: {width: 0.2, color: "white"}
 		 },
          uniqueValueInfos: [
         // All clients name with value of "VODAFONE NEW ZEALAND LIMITED " will be red
          {value: "Vodafone",
          symbol: {
            type: "simple-marker",  // autocasts as new SimpleFillSymbol()
-		   size: 4,
+		   //size: 4,
            color: "red",
-		   outline: {width: 0.5,color: "white"}
+		   outline: {width: 0.2,color: "white"}
          }
 		 //All clients name with value of "2 degrees " will be red
 		 },
-	     {value: "2 degrees",
+	     {value: "2degrees",
          symbol: {
            type: "simple-marker",  // autocasts as new SimpleFillSymbol()
-		   size: 4,
+		   //size: 4,
            color: "#87CEEB", //sky blue
-		   outline: {width: 0.5, color: "white"}
+		   outline: {width: 0.2, color: "white"}
          }
 		 //All client name with value "spark" will be purple
 		 },
 	     {value: "Spark",
          symbol: {
            type: "simple-marker",  // autocasts as new SimpleFillSymbol()
-		   size: 4,
+		   //size: 4,
            color: "purple",
-		   outline: {width: 0.5, color: "white"}
+		   outline: {width: 0.2, color: "white"}
          }		 
 		 },
-		 ]
+		 ],
+		 
+		 visualVariables : [
+         {
+           type: "size",
+           valueExpression: "$view.scale",
+           stops: [
+		    {
+       	       size: 16,
+       	       value: 1128
+       		},		   		   
+		    {
+       	       size: 12,
+       	       value: 4514
+       		},
+             {
+       	       size: 8,
+       	       value: 18055
+       		},
+			{
+       	       size: 6,
+       	       value: 144447		
+       		},			
+       		{
+               size: 4,
+               value: 1155581
+            },
+            {
+               size: 2,
+               value: 9244648
+            }
+           ]
+         }
+       ],
+       
 	   };   
+
+       //THis function will get current map scale	   
+       //view.watch('extent', function(){
+       //console.log("Watch for the current scale: ", view.scale);
+       //});
 	   
        var featureLayer = new FeatureLayer({
          url: "https://services7.arcgis.com/lUmstEB5yIEwBGsx/arcgis/rest/services/RSM_public_data/FeatureServer",
 		 outFields: ["*"],
          popupTemplate: popuplicenceinfo,
-		 copyright:"Radio Spectrum Mangagement, MBIE",
+		 copyright:"Radio Spectrum Management, MBIE",
 		 renderer: renderer
          });
 
-		
        map.add(featureLayer);
 	   
    /*
@@ -337,7 +376,11 @@
 	
 	licencecategoryOptions.addEventListener("change", licencecategoryfilter); 
 	//licencecategoryOptions.addEventListener("change", frequencyfilter); 
-  
+	
+    var legend = new Legend({
+       view: view,
+       container: "legendDiv"
+       });
     });
     </script>	
 	
