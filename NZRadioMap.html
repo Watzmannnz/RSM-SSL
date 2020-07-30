@@ -42,9 +42,10 @@
 	  //"esri/smartMapping/renderers/location",
 	  "esri/widgets/Slider",
 	  "esri/widgets/Search",
+	  "esri/tasks/Locator",
 	  "esri/widgets/Expand",
 	  "esri/widgets/Legend"
-    ], function(Map, MapView, BasemapToggle, FeatureLayer, Slider, Search, Expand, Legend) {
+    ], function(Map, MapView, BasemapToggle, FeatureLayer, Slider, Search, Locator, Expand, Legend) {
 
       var map = new Map({
         basemap: "osm"
@@ -280,12 +281,32 @@
       //view.ui.add(lictypeFilter, "top-right");
 	  
 	  //Search a licence on the map
+	  
+	  
 	  const LicIDsearch = new Search ({
 	    view: view,
 		container: "LicIDsearch",
 		searchAllEnabled: false,
 		//allPlaceholder: "Licence Search",
         sources: [
+		  /*
+		  {
+		  layer: featureLayer,
+	  locator: new Locator({ url: "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"}),
+      countryCode: "NZL",
+      singleLineFieldName: "SingleLine",
+      name: "Custom Geocoding Service",
+      localSearchOptions: {
+        minScale: 300000,
+        distance: 50000
+      },
+      placeholder: "New Zealand Address",
+      maxResults: 3,
+      maxSuggestions: 6,
+      suggestionsEnabled: true,
+      minSuggestCharacters: 0
+		  },
+		*/
           {
           layer: featureLayer,
 		  name: "Licence ID",
@@ -294,8 +315,19 @@
           exactMatch: false,
 		  outFields: ["*"],
 		  placeholder: "Input Licence ID here",
-		  zoomScale: 5000000
-          }]	
+		  zoomScale: 500000
+          },
+		  {
+          layer: featureLayer,
+		  name: "Licence Location",
+          searchFields: ["locationname"],
+          displayField: "locationname",
+          exactMatch: false,
+		  outFields: ["*"],
+		  placeholder: "Search licence location",
+		  zoomScale: 500000
+          }		  
+		  ]	
 	  });
 	  
 	  //view.ui.add(LicIDsearch, "top-right");
