@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>NZ Radio Map</title>
+    <style>
+      html, 
+	  body, 
+	  #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+	  
+	   #rendererDiv {
+        padding: 20px;
+        width: 400px;
+      }
+	  
+	   #legendDiv {
+       width: 260px;
+      }
+	    .slider {
+        height: 40px;
+        width: 100%;
+      }
+	  
+    </style>
+	<link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/themes/light/main.css">
+    <script src="https://js.arcgis.com/4.16/"></script>
+    <script>
+	
+	//require and function elements must match with the sequence
+    require([
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/widgets/BasemapToggle",
+	  "esri/layers/FeatureLayer",
+	  //"esri/renderers/SimpleRenderer",
+	  //"esri/smartMapping/renderers/location",
+	  "esri/widgets/Slider",
+	  "esri/widgets/Search",
+	  "esri/tasks/Locator",
+	  "esri/widgets/Expand",
+	  "esri/widgets/Legend"
+    ], function(Map, MapView, BasemapToggle, FeatureLayer, Slider, Search, Locator, Expand, Legend) {
+
+      var map = new Map({
+        basemap: "osm"
+      });
+      
+      var view = new MapView({
+        container: "viewDiv",
+        map: map,
+        center: [174.8199431,-41.2662579],
+        zoom: 8
+      });      
+		
+      var basemapToggle = new BasemapToggle({
+        view: view,
+        nextBasemap: "satellite",
+      });
+      
+       view.ui.add(basemapToggle,"bottom-right");
+	   
+	   const expand = new Expand({
+       view: view,
+       content: document.getElementById("rendererDiv"),
+       expanded: true,
+       expandIconClass: "esri-icon-settings2"
+       });
+
+       view.ui.add(expand, "top-right");
+
+	   
+	   //pop-up window configuration
+	   var popuplicenceinfo = {
+          title: "Licence ID: {licenceid}<br>",
+          content: [
+		  {
+		  type: "fields",
+		  fieldInfos: [{
+		    fieldName: "Name",
+			label: "Licensee"
+		  },
+  		  {
+		    fieldName: "manage",
+			label: "Management Right"
+		  },
+		  {
+		    fieldName: "spectrumlabel",
+			label: "Channel"
+		  },
+		  {
+		    fieldName: "frequency",
+			label: "Frequency (MHz)"
+		  },
+		  {
+		    fieldName: "spectrumlow",
+			label: "Start Frequency (MHz)"
+		  },		  
+  		  {
+		    fieldName: "spectrumhigh",
+			label: "Stop Frequency (MHz)"
+		  },
+  		  {
+		    fieldName: "power",
+			label: "EIRP Power (dBW)"
+		  },		  
+  		  {
+		    fieldName: "locationname",
+			label: "Location"
+		  },
+          {
+		  	fieldName: "locationheig",
+			label: "Elevation (m)"
+		  },		  
+  		  {
+		    fieldName: "txantennaheight",
+			label: "Antenna Height (m)"
+		  },
+  		  {
+		    fieldName: "polarisation",
+			label: "Polarisation"
+		  },	
+  		  {
+		    fieldName: "txazimuth",
+			label: "Azimuth"
+		  },
+		  ]},
+		  ],
+		  //Create the RRF search action and icon on popup
+		  actions: [
+		  {
+		    id: "Search-on-RRF",
+			image: "http://static.arcgis.com/images/Symbols/PeoplePlaces/Clue.png",
+            title: "Licence Detail"			
+		  }
+		  ],
+		  outFields: ["*"]
+       };		   
+
+	   //Create the RRF search function
+          view.when(function () {
+          var popup = view.popup;
+          popup.viewModel.on("trigger-action", function (event) {
+            if (event.action.id === "Search-on-RRF") {
+		    var attributes = popup.viewModel.selectedFeature.attributes;
+			 var licID = attributes.licenceid;
+		//	 console.log('licenceid:', info);
+                window.open("https://rrf.rsm.govt.nz/rrf/licence/id/"+licID.toString());
+              }
+            }
+          );
+        });
+
+	   //render to design a legend
+	   
+	   var renderer = {
+         type: "unique-value",  
+         //field: "name",
+		 valueExpression: 
+		 //format name to short version
+		 "When($feature.name == 'VODAFONE NEW ZEALAND LIMITED', 'Vodafone', $feature.name == 'TWO DEGREES NETWORKS LIMITED', '2degrees', $feature.name == 'SPARK NEW ZEALAND TRADING LIMITED', 'Spark', 'Others')",
+         defaultSymbol: { 
+		 type: "simple-marker", 
+		 //size: 4,
+		 color: "#FFA500", //orange
+         outline: {width: 0.2, color: "white"}
+		 },
+         uniqueValueInfos: [
+        // All clients name with value of "VODAFONE NEW ZEALAND LIMITED " will be red
+         {value: "Vodafone",
+         symbol: {
+           type: "simple-marker",  // autocasts as new SimpleFillSymbol()
+		   //size: 4,
+           color: "red",
+		   outline: {width: 0.2,color: "white"}
+         }
+		 //All clients name with value of "2 degrees " will be red
+		 },
+	     {value: "2degrees",
+         symbol: {
+           type: "simple-marker",  // autocasts as new SimpleFillSymbol()
+		   //size: 4,
+           color: "#87CEEB", //sky blue
+		   outline: {width: 0.2, color: "white"}
+         }
+		 //All client name with value "spark" will be purple
+		 },
+	     {value: "Spark",
+         symbol: {
+           type: "simple-marker",  // autocasts as new SimpleFillSymbol()
+		   //size: 4,
+           color: "purple",
+		   outline: {width: 0.2, color: "white"}
+         }		 
+		 },
+		 ],
+		 
+		 visualVariables : [
+         {
+           type: "size",
+           valueExpression: "$view.scale",
+           stops: [
+		    {
+       	       size: 16,
+       	       value: 1128
+       		},		   		   
+		    {
+       	       size: 12,
+       	       value: 4514
+       		},
+             {
+       	       size: 8,
+       	       value: 18055
+       		},
+			{
+       	       size: 6,
+       	       value: 144447		
+       		},			
+       		{
+               size: 4,
+               value: 1155581
+            },
+            {
+               size: 2,
+               value: 9244648
+            }
+           ]
+         }
+       ],
+       
+	   };   
+
+       //THis function will get current map scale	   
+       //view.watch('extent', function(){
+       //console.log("Watch for the current scale: ", view.scale);
+       //});
+	   
+       var featureLayer = new FeatureLayer({
+         url: "https://services7.arcgis.com/lUmstEB5yIEwBGsx/arcgis/rest/services/RSM_public_data/FeatureServer",
+		 outFields: ["*"],
+         popupTemplate: popuplicenceinfo,
+		 copyright:"Radio Spectrum Management, MBIE",
+		 renderer: renderer
+         });
+
+       map.add(featureLayer);
+	   
+   /*
+	   var sqllicencetype = [
+	   "licencetype = 'Other >=10 & <20dBW (Spectrum)'",
+	   "licencetype = 'VHF FM >=40dBW (Spectrum)'",
+	   "licencetype = 'Other >=20 & <30dBW (Spectrum)'",
+       "licencetype = 'Other >=30dBW (Spectrum)'",	 
+	   "licencetype = 'Sat Fixed Per Transponder'"
+       ];
+	   	   
+	   var lictypeFilter = document.createElement("select");
+       lictypeFilter.setAttribute("class", "esri-widget esri-select");
+       lictypeFilter.setAttribute(
+       "style",
+       "width: 375px; font-family: Avenir Next W00; font-size: 1em;"
+       );
+	   
+	   sqllicencetype.forEach(function (sql) {
+       var option = document.createElement("option");
+       option.value = sql;
+       option.innerHTML = sql;
+       lictypeFilter.appendChild(option);
+       });
+	  
+	  lictypefilter.addEventListener("change", function (event) {
+      lictypefilter(event.target.value);
+      });
+	  */
+
+      //view.ui.add(lictypeFilter, "top-right");
+	  
+	  //Search a licence on the map
+	  
+	  
+	  const LicIDsearch = new Search ({
+	    view: view,
+		container: "LicIDsearch",
+		searchAllEnabled: false,
+		//allPlaceholder: "Licence Search",
+        sources: [
+		  /*
+		  {
+		  layer: featureLayer,
+	  locator: new Locator({ url: "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"}),
+      countryCode: "NZL",
+      singleLineFieldName: "SingleLine",
+      name: "Custom Geocoding Service",
+      localSearchOptions: {
+        minScale: 300000,
+        distance: 50000
+      },
+      placeholder: "New Zealand Address",
+      maxResults: 3,
+      maxSuggestions: 6,
+      suggestionsEnabled: true,
+      minSuggestCharacters: 0
+		  },
+		*/
+          {
+          layer: featureLayer,
+		  name: "Licence ID",
+          searchFields: ["licenceid"],
+          displayField: "licenceid",
+          exactMatch: false,
+		  outFields: ["*"],
+		  placeholder: "Input Licence ID here",
+		  zoomScale: 500000
+          },
+		  {
+          layer: featureLayer,
+		  name: "Licence Location",
+          searchFields: ["locationname"],
+          displayField: "locationname",
+          exactMatch: false,
+		  outFields: ["*"],
+		  placeholder: "Search licence location",
+		  zoomScale: 500000
+          }		  
+		  ]	
+	  });
+	  
+	  //view.ui.add(LicIDsearch, "top-right");
+	  
+      //Frequency filter	  
+	  /*
+	  function frequencyfilter(expression) {
+      view.whenLayerView(featureLayer).then(function (featureLayerView) {
+      featureLayerView.filter = {
+      where: "spectrumlow >= " + freqstartslider.values[0] + " AND " + "spectrumhigh <= " + freqstopslider.values[0],
+      };
+      });
+      }     
+*/
+	  function frequencyfilter(expression) {
+      view.whenLayerView(featureLayer).then(function (featureLayerView) {
+      featureLayerView.filter = {
+      where: "spectrumlow >= " + freqstartslider.values[0] + " AND " + "spectrumhigh <= " + freqstopslider.values[0],
+      };
+      });
+      }    
+	  
+	  const freqstartslider = new Slider ({
+	        container: "freqstartslider",
+			min: 0,
+            max: 10000,
+            values: [0],
+            snapOnClickEnabled: true,
+			labelInputsEnabled: true,
+			rangeLabelInputsEnabled: true,
+            visibleElements: {
+              labels: true,
+			  rangeLabels: true,			  
+            }
+       });
+	   
+	  const freqstopslider = new Slider ({
+	        container: "freqstopslider",
+			min: 0,
+            max: 10000,
+            values: [3800],
+            snapOnClickEnabled: true,
+			labelInputsEnabled: true,
+			rangeLabelInputsEnabled: true,
+            visibleElements: {
+              labels: true,
+			  rangeLabels: true			  
+            }
+       });
+	   
+      freqstartslider.on(["thumb-change", "thumb-drag"], licencecategoryfilter);	
+      //freqstartslider.on(["thumb-change", "thumb-drag"], licencecategoryfilter);		  
+	  freqstopslider.on(["thumb-change", "thumb-drag"], licencecategoryfilter);	  
+      //freqstopslider.on(["thumb-change", "thumb-drag"], licencecategoryfilter);	
+
+    function licencecategoryfilter(expression){
+	  view.whenLayerView(featureLayer).then(function (featureLayerView) {              
+			  switch (licencecategoryOptions.value){
+			  case "Radio":
+			  featureLayerView.filter = {
+			  where: "spectrumlow >= " + freqstartslider.values[0] + " AND " + "spectrumhigh <= " + freqstopslider.values[0] + " AND " + "licencecategory = 'Radio'",
+			  };
+			  break;
+			  case "Spectrum":
+			  featureLayerView.filter = {
+			  where: "spectrumlow >= " + freqstartslider.values[0] + " AND " + "spectrumhigh <= " + freqstopslider.values[0] + " AND " + "licencecategory = 'Spectrum'",
+			  };			  
+			  break;
+			  case "All":
+			  featureLayerView.filter = {
+			  where: "spectrumlow >= " + freqstartslider.values[0] + " AND " + "spectrumhigh <= " + freqstopslider.values[0],
+			  };			  
+			  };
+	});
+	}
+
+	var licencecategoryOptions = document.getElementById("licencecategoryOpts");
+	
+	licencecategoryOptions.addEventListener("change", licencecategoryfilter); 
+	//licencecategoryOptions.addEventListener("change", frequencyfilter); 
+	
+    var legend = new Legend({
+       view: view,
+       container: "legendDiv"
+       });
+    });
+    </script>	
+	
+  </head>
+  <body>
+    <div id="viewDiv"></div>
+	  <div id="rendererDiv" class="esri-widget">
+      <h3 class="esri-widget__heading">Searching Criteria</h3>
+        <div id="LicIDsearch" class="esri-feature-form"></div>
+       <h4 id="licencecategory" class="esri-feature-form__label"
+        >Licence Category</h4>	
+       <select id="licencecategoryOpts" class="esri-widget">
+	    <option value="All">All Licence</option>
+        <option value="Radio">Radio Licence</option>
+        <option value="Spectrum">Spectrum Licence</option>
+      </select>	
+      	<h4 id="frequencystart" class="esri-feature-form__label"
+        >Frequency Start: (MHz)</h4><br />
+		<div id="freqstartslider" class="slider"></div>
+      	<h4 id="frequencystop" class="esri-feature-form__label"
+        >Frequency Stop: (MHz)</h4><br />		
+		<div id="freqstopslider" class="slider"></div>
+		<div id="legendDiv"></div>
+    </div>
+  </body>
+</html>
