@@ -131,6 +131,7 @@
 		  },
 		  ]},
 		  ],
+		  
 		  //Create the RRF search action and icon on popup
 		  actions: [
 		  {
@@ -161,7 +162,8 @@
 	   var renderer = {
          type: "unique-value",  
          //field: "name",
-		 valueExpression: 
+		 
+		 valueExpression: 		 
 		 //format name to short version
 		 "When($feature.name == 'VODAFONE NEW ZEALAND LIMITED', 'Vodafone', $feature.name == 'TWO DEGREES NETWORKS LIMITED', '2degrees', $feature.name == 'SPARK NEW ZEALAND TRADING LIMITED', 'Spark', 'Others')",
          defaultSymbol: { 
@@ -235,7 +237,7 @@
        
 	   };   
 
-       //THis function will get current map scale	   
+       //This function will read current map scale	   
        //view.watch('extent', function(){
        //console.log("Watch for the current scale: ", view.scale);
        //});
@@ -287,26 +289,12 @@
 	    view: view,
 		container: "LicIDsearch",
 		searchAllEnabled: false,
+		includeDefaultSources: false,
+        //locationEnabled: false,
 		//allPlaceholder: "Licence Search",
-        sources: [
-		  /*
-		  {
-		  layer: featureLayer,
-	  locator: new Locator({ url: "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"}),
-      countryCode: "NZL",
-      singleLineFieldName: "SingleLine",
-      name: "Custom Geocoding Service",
-      localSearchOptions: {
-        minScale: 300000,
-        distance: 50000
-      },
-      placeholder: "New Zealand Address",
-      maxResults: 3,
-      maxSuggestions: 6,
-      suggestionsEnabled: true,
-      minSuggestCharacters: 0
-		  },
-		*/
+        sources: [	
+
+          //Search Licence ID		
           {
           layer: featureLayer,
 		  name: "Licence ID",
@@ -317,6 +305,8 @@
 		  placeholder: "Input Licence ID here",
 		  zoomScale: 500000
           },
+		  
+		  //Search Licence Location
 		  {
           layer: featureLayer,
 		  name: "Licence Location",
@@ -326,29 +316,39 @@
 		  outFields: ["*"],
 		  placeholder: "Search licence location",
 		  zoomScale: 500000
-          }		  
+          },
+		  
+		  //Search NZ Address
+		  {
+	      locator: new Locator({url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"}),
+          countryCode: "NZ",
+          singleLineFieldName: "SingleLine",
+	      outFields: ["*"],
+          name: "NZ Address",
+          localSearchOptions: {
+            minScale: 300000,
+            distance: 50000
+          },
+          placeholder: "New Zealand Address",
+          maxResults: 3,
+          maxSuggestions: 6,
+          suggestionsEnabled: true,
+          minSuggestCharacters: 0
+		  }		  
 		  ]	
 	  });
 	  
 	  //view.ui.add(LicIDsearch, "top-right");
 	  
       //Frequency filter	  
-	  /*
-	  function frequencyfilter(expression) {
-      view.whenLayerView(featureLayer).then(function (featureLayerView) {
-      featureLayerView.filter = {
-      where: "spectrumlow >= " + freqstartslider.values[0] + " AND " + "spectrumhigh <= " + freqstopslider.values[0],
-      };
-      });
-      }     
-*/
-	  function frequencyfilter(expression) {
-      view.whenLayerView(featureLayer).then(function (featureLayerView) {
-      featureLayerView.filter = {
-      where: "spectrumlow >= " + freqstartslider.values[0] + " AND " + "spectrumhigh <= " + freqstopslider.values[0],
-      };
-      });
-      }    
+
+	  //function frequencyfilter(expression) {
+      //view.whenLayerView(featureLayer).then(function (featureLayerView) {
+      //featureLayerView.filter = {
+      //where: "spectrumlow >= " + freqstartslider.values[0] + " AND " + "spectrumhigh <= " + freqstopslider.values[0],
+      //};
+      //});
+      //}    
 	  
 	  const freqstartslider = new Slider ({
 	        container: "freqstartslider",
@@ -384,6 +384,7 @@
       //freqstopslider.on(["thumb-change", "thumb-drag"], licencecategoryfilter);	
 
     function licencecategoryfilter(expression){
+	
 	  view.whenLayerView(featureLayer).then(function (featureLayerView) {              
 			  switch (licencecategoryOptions.value){
 			  case "Radio":
