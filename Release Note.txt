@@ -10,4 +10,6 @@ Add channel identifier in licence summary
 
 V0.3
 Implement dynamic size marker feature
+Add licence location search feature
+Limit the address seach area within New Zealand
 A few typo fix
