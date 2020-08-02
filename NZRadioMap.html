@@ -81,12 +81,17 @@
           content: [
 		  {
 		  type: "fields",
-		  fieldInfos: [{
+		  fieldInfos: [
+		  {
+		    fieldName: "licencenumber",
+			label: "Licence Number"
+		  },		  
+		  {
 		    fieldName: "Name",
 			label: "Licensee"
 		  },
   		  {
-		    fieldName: "manage",
+		    fieldName: "managementrightid",
 			label: "Management Right"
 		  },
 		  {
@@ -114,7 +119,7 @@
 			label: "Location"
 		  },
           {
-		  	fieldName: "locationheig",
+		  	fieldName: "locationheight",
 			label: "Elevation (m)"
 		  },		  
   		  {
@@ -243,7 +248,7 @@
        //});
 	   
        var featureLayer = new FeatureLayer({
-         url: "https://services7.arcgis.com/lUmstEB5yIEwBGsx/arcgis/rest/services/RSM_public_data/FeatureServer",
+         url: "https://services7.arcgis.com/lUmstEB5yIEwBGsx/arcgis/rest/services/RSM_Licence/FeatureServer",
 		 outFields: ["*"],
          popupTemplate: popuplicenceinfo,
 		 copyright:"Radio Spectrum Management, MBIE",
