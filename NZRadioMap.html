@@ -55,7 +55,14 @@
         container: "viewDiv",
         map: map,
         center: [174.8199431,-41.2662579],
-        zoom: 8
+        zoom: 8,
+		          popup: {
+            dockEnabled: true,
+            dockOptions: {
+              // Disables the dock button from the popup
+             position:"top-left"
+            }
+		} 
       });      
 		
       var basemapToggle = new BasemapToggle({
@@ -299,6 +306,23 @@
 		//allPlaceholder: "Licence Search",
         sources: [	
 
+		//Search NZ Address
+		  {
+	      locator: new Locator({url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"}),
+          countryCode: "NZ",
+          singleLineFieldName: "SingleLine",
+	      outFields: ["*"],
+          name: "NZ Address",
+          localSearchOptions: {
+            minScale: 300000,
+            distance: 50000
+          },
+          placeholder: "New Zealand Address",
+          maxResults: 3,
+          maxSuggestions: 6,
+          suggestionsEnabled: true,
+          minSuggestCharacters: 0
+		  },	
           //Search Licence ID		
           {
           layer: featureLayer,
@@ -321,25 +345,7 @@
 		  outFields: ["*"],
 		  placeholder: "Search licence location",
 		  zoomScale: 500000
-          },
-		  
-		  //Search NZ Address
-		  {
-	      locator: new Locator({url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"}),
-          countryCode: "NZ",
-          singleLineFieldName: "SingleLine",
-	      outFields: ["*"],
-          name: "NZ Address",
-          localSearchOptions: {
-            minScale: 300000,
-            distance: 50000
-          },
-          placeholder: "New Zealand Address",
-          maxResults: 3,
-          maxSuggestions: 6,
-          suggestionsEnabled: true,
-          minSuggestCharacters: 0
-		  }		  
+          }		 	  
 		  ]	
 	  });
 	  
