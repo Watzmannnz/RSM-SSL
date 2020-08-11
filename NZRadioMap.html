@@ -182,6 +182,7 @@
 		 type: "simple-marker", 
 		 //size: 4,
 		 color: "#FFA500", //orange
+		 //color: "#008080", //teal
          outline: {width: 0.4, color: "white"}
 		 },
          uniqueValueInfos: [
@@ -332,6 +333,9 @@
           exactMatch: false,
 		  outFields: ["*"],
 		  placeholder: "Input Licence ID here",
+		  maxResults: 3,
+          maxSuggestions: 6,
+          suggestionsEnabled: true,
 		  zoomScale: 500000
           },
 		  
@@ -400,17 +404,17 @@
 			  switch (licencecategoryOptions.value){
 			  case "Radio":
 			  featureLayerView.filter = {
-			  where: "spectrumlow >= " + freqstartslider.values[0] + " AND " + "spectrumhigh <= " + freqstopslider.values[0] + " AND " + "licencecategory = 'Radio'",
+			  where: "spectrumhigh >= " + freqstartslider.values[0] + " AND " + "spectrumlow <= " + freqstopslider.values[0] + " AND " + "licencecategory = 'Radio'",
 			  };
 			  break;
 			  case "Spectrum":
 			  featureLayerView.filter = {
-			  where: "spectrumlow >= " + freqstartslider.values[0] + " AND " + "spectrumhigh <= " + freqstopslider.values[0] + " AND " + "licencecategory = 'Spectrum'",
+			  where: "spectrumhigh >= " + freqstartslider.values[0] + " AND " + "spectrumlow <= " + freqstopslider.values[0] + " AND " + "licencecategory = 'Spectrum'",
 			  };			  
 			  break;
 			  case "All":
 			  featureLayerView.filter = {
-			  where: "spectrumlow >= " + freqstartslider.values[0] + " AND " + "spectrumhigh <= " + freqstopslider.values[0],
+			  where: "spectrumhigh >= " + freqstartslider.values[0] + " AND " + "spectrumlow <= " + freqstopslider.values[0],
 			  };			  
 			  };
 	});
