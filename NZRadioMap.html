@@ -56,7 +56,7 @@
         map: map,
         center: [174.8199431,-41.2662579],
         zoom: 8,
-		          popup: {
+        popup: {
             dockEnabled: true,
             dockOptions: {
               // Disables the dock button from the popup
@@ -368,8 +368,8 @@
 	  const freqstartslider = new Slider ({
 	        container: "freqstartslider",
 			min: 0,
-            max: 10000,
-            values: [0],
+            max: 30000,
+            values: [200],
             snapOnClickEnabled: true,
 			labelInputsEnabled: true,
 			rangeLabelInputsEnabled: true,
@@ -382,7 +382,7 @@
 	  const freqstopslider = new Slider ({
 	        container: "freqstopslider",
 			min: 0,
-            max: 10000,
+            max: 30000,
             values: [3800],
             snapOnClickEnabled: true,
 			labelInputsEnabled: true,
