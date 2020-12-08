@@ -259,7 +259,7 @@
          url: "https://services7.arcgis.com/lUmstEB5yIEwBGsx/arcgis/rest/services/Prism_Licence/FeatureServer",
 		 outFields: ["*"],
          popupTemplate: popuplicenceinfo,
-		 copyright:"Radio Spectrum Management, MBIE",
+		 copyright:"Radio Spectrum Management, MBIE, 2020/12/08",
 		 renderer: renderer
          });
 
@@ -343,8 +343,8 @@
 		  {
           layer: featureLayer,
 		  name: "Licence Location",
-          searchFields: ["locationname_TX"],
-          displayField: "locationname_TX",
+          searchFields: ["locationname"],
+          displayField: "locationname",
           exactMatch: false,
 		  outFields: ["*"],
 		  placeholder: "Search licence location",
